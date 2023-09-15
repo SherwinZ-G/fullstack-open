@@ -1,4 +1,5 @@
 const listHelper = require('../utils/list_helper')
+
 describe('total likes', () => {
     const listWithOneBlog  = [
         {
@@ -55,4 +56,19 @@ describe('total likes', () => {
       const result = listHelper.totalLikes(listWithOneBlog)
       expect(result).toBe(36)
     })
+
+    test('the blog with most favourites', () => {
+        const result = listHelper.mostLikes(listWithOneBlog)
+        expect(result.likes).toEqual(12)
+      })
+
+      test('the author has most blogs', () => {
+        const result = listHelper.mostBlogs(listWithOneBlog)
+        expect(result.author).toBe("Robert C. Martin")
+      })
+
+      test('the author has most likes', () => {
+        const result = listHelper.mostLikeAuthor(listWithOneBlog)
+        expect(result.author).toBe("Edsger W. Dijkstra")
+      })
   })
