@@ -22,7 +22,6 @@ const Blog = mongoose.model('Blog', blogSchema)
 const mongoUrl = process.env.MONGODB_URI
 mongoose.connect(mongoUrl)
 
-
 app.get('/api/blogs', (request, response) => {
     logger.info('mongo connect successful')
   Blog
@@ -35,14 +34,23 @@ app.get('/api/blogs', (request, response) => {
     });
 })
 
-app.get('/npd', (req, res) => {
-  res.send('ok cool it works')
-})
+app.delete("/api/blogs/:id", (request, response) => {
+  const id = Number(request.params.id);
+  //mongoose自带的remove方法
+  Blog.findByIdAndRemove(id)
+    .then(() => {
+      logger.info(`Deleted blog with ID: ${id}`);
+      response.status(204).end(); // 204表示成功处理，但不返回任何内容
+    })
+    .catch((error) => {
+      logger.error("Error deleting blog:", error);
+      response.status(500).json({ error: "Internal Server Error" });
+    });
+});
 
 app.post('/api/blogs', (request, response) => {
 
   const blog = new Blog(request.body)
-
   blog
     .save()
     .then(result => {
