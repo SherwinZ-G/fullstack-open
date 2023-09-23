@@ -1,41 +1,40 @@
-require('dotenv').config()
-const config=require('./utils/config')
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const mongoose = require('mongoose')
-const logger = require('./utils/logger')
-const http = require('http')
+require("dotenv").config();
+const config = require("./utils/config");
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const mongoose = require("mongoose");
+const logger = require("./utils/logger");
+const http = require("http");
 
-app.use(cors())
-app.use(express.json())
-
+app.use(cors());
+app.use(express.json());
 
 const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
-  likes: Number
-})
+  likes: Number,
+});
 
-const Blog = mongoose.model('Blog', blogSchema)
-const mongoUrl = process.env.MONGODB_URI
-mongoose.connect(mongoUrl)
+const Blog = mongoose.model("Blog", blogSchema);
+const mongoUrl = process.env.MONGODB_URI;
+mongoose.connect(mongoUrl);
 
-app.get('/api/blogs', (request, response) => {
-    logger.info('mongo connect successful')
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    }).catch(error => {
-      logger.error('Error fetching blogs:', error);
-      response.status(500).json({ error: 'Internal Server Error' });
+app.get("/api/blogs", (request, response) => {
+  logger.info("mongo connect successful");
+  Blog.find({})
+    .then((blogs) => {
+      response.json(blogs);
+    })
+    .catch((error) => {
+      logger.error("Error fetching blogs:", error);
+      response.status(500).json({ error: "Internal Server Error" });
     });
-})
+});
 
 app.delete("/api/blogs/:id", (request, response) => {
-  const id = Number(request.params.id);
+  const id = String(request.params.id);
   //mongoose自带的remove方法
   Blog.findByIdAndRemove(id)
     .then(() => {
@@ -48,17 +47,36 @@ app.delete("/api/blogs/:id", (request, response) => {
     });
 });
 
-app.post('/api/blogs', (request, response) => {
+app.patch("/api/blogs/:id", async (request, response) => {
+  const id = request.params.id;
+  const updateData = request.body;
 
-  const blog = new Blog(request.body)
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
-})
+  // 使用 Mongoose 的 findByIdAndUpdate 方法来更新指定 ID 的博客
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      id,
+      { likes: updateData.likes },
+      { new: true }
+    );
+    if (updatedBlog) {
+      response.json(updatedBlog);
+    } else {
+      response.status(404).json({ error: "Blog not found" });
+    }
+  } catch (error) {
+    logger.error("Error updating blog:", error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-module.exports = app
+app.post("/api/blogs", (request, response) => {
+  const blog = new Blog(request.body);
+  blog.save().then((result) => {
+    response.status(201).json(result);
+  });
+});
+
+module.exports = app;
 // server.listen(config.PORT, () => {
 //   console.log(`server is running on ${config.PORT}`)
 // })
