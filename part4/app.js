@@ -6,6 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const logger = require("./utils/logger");
 const http = require("http");
+const loginRouter = require('./controllers/login');
 
 app.use(cors());
 app.use(express.json());
@@ -20,6 +21,10 @@ const blogSchema = new mongoose.Schema({
 const Blog = mongoose.model("Blog", blogSchema);
 const mongoUrl = process.env.MONGODB_URI;
 mongoose.connect(mongoUrl);
+
+// ...
+
+app.use('/api/login', loginRouter); // '/api/login' 是登录路由的基本路径
 
 app.get("/api/blogs", (request, response) => {
   logger.info("mongo connect successful");
@@ -75,6 +80,8 @@ app.post("/api/blogs", (request, response) => {
     response.status(201).json(result);
   });
 });
+
+
 
 module.exports = app;
 // server.listen(config.PORT, () => {
