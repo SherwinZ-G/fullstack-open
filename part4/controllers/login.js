@@ -6,36 +6,24 @@ const User = require("../models/user");
 loginRouter.post("/", async (request, response) => {
   const { username, password } = request.body;
 
-    const user = await User.findOne({ username });
-    
-    if (!user) {
-     const newUser = await new User(request.body);
-      newUser.save().then((result) => {
-        response.status(201).json(result);
-      });
-  
-}
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
 
-  const passwordCorrect =
-    user === null ? false : await bcrypt.compare(password, user.passwordHash);
+  const user = new User({
+    username,
+    passwordHash,
+  });
+  const textEncoder = new TextEncoder();
+  const userLength = textEncoder.encode(username);
+  const pwdLength = textEncoder.encode(password);
 
-  if (!(user && passwordCorrect)) {
-    return response.status(401).json({
-      error: "invalid username or password",
-    });
-    }
-    
+  if (userLength.length <= 3 || pwdLength<=3) {
+    return response.status(400).json({error:"用户名长度太短"})
+  } else {
+      const savedUser = await user.save();
+      response.status(201).json(savedUser);
+  }
 
-  const userForToken = {
-    username: user.username,
-    id: user._id,
-  };
-
-  const token = jwt.sign(userForToken, process.env.SECRET);
-
-  response
-    .status(200)
-    .send({ token, username: user.username, name: user.name });
 });
 
 module.exports = loginRouter;
