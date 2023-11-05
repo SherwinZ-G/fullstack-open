@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import LoginForm from "./components/Loginform"
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import axios from "axios";
@@ -55,6 +56,14 @@ const App = () => {
     window.location.reload();
   };
 
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value)
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
   const handleCreate = async (event) => {
     event.preventDefault();
     console.log("已调用create blogs");
@@ -88,25 +97,13 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <h1>{errorMessage}</h1>
-        <form onSubmit={handleLogin}>
-          <div>
-            username:
-            <input
-              value={userName}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            ></input>
-          </div>
-          <div>
-            password:
-            <input
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            ></input>
-          </div>
-          <button type="submit">login</button>
-        </form>
+        <LoginForm
+          userName={userName}
+          password={password}
+          handleLogin={handleLogin}
+          handleUsernameChange={handleUsernameChange}
+          handlePasswordChange={handlePasswordChange}
+        />
       </div>
     );
   } else {
@@ -114,7 +111,7 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <div>
-          <h2>Username {user.name}</h2>
+          <h2>Hi user: {user.username}</h2>
         </div>
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} />
@@ -123,33 +120,7 @@ const App = () => {
           logout: <button onClick={handleLogout}>logout</button>
         </div>
 
-        <form onSubmit={handleCreate}>
-          <div>
-            title:
-            <input
-              value={title}
-              name="blogTitle"
-              onChange={({ target }) => setTitle(target.value)}
-            ></input>
-          </div>
-          <div>
-            url:
-            <input
-              value={url}
-              name="blogUrl"
-              onChange={({ target }) => setUrl(target.value)}
-            ></input>
-          </div>
-          <div>
-            author:
-            <input
-              value={author}
-              name="blogauthor"
-              onChange={({ target }) => setAuthor(target.value)}
-            ></input>
-          </div>
-          <button type="submit">create</button>
-        </form>
+
         <div>{nBlog === "" ? null : nBlog}</div>
       </div>
     );
