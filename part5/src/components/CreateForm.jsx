@@ -6,7 +6,7 @@ const createForm = (props) => {
           <input
             value={props.title}
             name="blogTitle"
-            onChange={handleTitleChange}
+            onChange={props.handleTitleChange}
           ></input>
         </div>
         <div>
@@ -14,7 +14,7 @@ const createForm = (props) => {
           <input
             value={props.url}
             name="blogUrl"
-            onChange={handleUrlChange}
+            onChange={props.handleUrlChange}
           ></input>
         </div>
         <div>
@@ -22,7 +22,7 @@ const createForm = (props) => {
           <input
             value={props.author}
             name="blogauthor"
-            onChange={handleAuthorChange}
+            onChange={props.handleAuthorChange}
           ></input>
         </div>
         <button type="submit">create</button>

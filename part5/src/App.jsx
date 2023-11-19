@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/Loginform"
+import CreateForm from "./components/CreateForm";
+import Togglable from "./components/Togglable"
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import axios from "axios";
@@ -15,6 +17,7 @@ const App = () => {
   const [url, setUrl] = useState("");
   const [author, setAuthor] = useState("");
   const [nBlog, setNblog] = useState("");
+  // const[createVisible,setCreateVisible]=useState(false)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -63,6 +66,18 @@ const App = () => {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+
+  const handleAuthorChange = (e) => {
+    setAuthor(e.target.value)
+  }
+
+  const handleUrlChange = (e) => {
+    setUrl(e.target.value)
+  }
+
+  const handleTitleChange = (e) => {
+   setTitle(e.target.value)
+ }
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -116,10 +131,21 @@ const App = () => {
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} />
         ))}
+  
+        <Togglable buttonLabel="create">
+          <CreateForm
+            url={url}
+            title={title}
+            author={author}
+            handleAuthorChange={handleAuthorChange}
+            handleUrlChange={handleUrlChange}
+            handleTitleChange={handleTitleChange}
+            handleCreate={handleCreate}
+          />
+        </Togglable> 
         <div>
           logout: <button onClick={handleLogout}>logout</button>
         </div>
-
 
         <div>{nBlog === "" ? null : nBlog}</div>
       </div>

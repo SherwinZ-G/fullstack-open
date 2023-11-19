@@ -1,7 +1,15 @@
-const Blog = ({ blog }) => (
-  <div>
+const Blog = ({ blog }) => {
+  const divStyle = {
+
+    border: '2px solid black',
+    margin:'0 0 2px 0'
+  };
+  return (<div style={divStyle}>
     {blog.title} {blog.author}
-  </div>  
-)
+    <div>{blog.url}</div>
+    <div>{blog.likes}</div>
+  </div>)
+
+};
 
 export default Blog

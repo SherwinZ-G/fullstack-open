@@ -31,4 +31,18 @@ usersRouter.get("/", async (request, response) => {
   response.json(users.map((u) => u.toJSON()));
 });
 
+usersRouter.get("/:userId/blogs", async (request, response) => {
+  const userId = request.params.userId; // 从路由参数中获取userId
+  const user = await User.findById(userId).populate("blogs", {
+    user: 0,
+    likes: 0,
+  });
+
+  if (!user) {
+    return response.status(404).json({ error: "User not found" });
+  }
+
+  response.json(user.blogs.map((blog) => blog.toJSON()));
+});
+
 module.exports = usersRouter;
