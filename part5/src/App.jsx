@@ -16,9 +16,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [author, setAuthor] = useState("");
-  const [nBlog, setNblog] = useState("");
-  const [hide, setHide] = useState("")
-  
+  const [nBlog,setNblog]=useState("")
   // const[createVisible,setCreateVisible]=useState(false)
 
   useEffect(() => {
@@ -55,33 +53,40 @@ const App = () => {
       }, 5000);
     }
   };
-  const handleLike = async (event ) => {
-event.preventDefault();
-console.log("已调用create blogs");
-console.log(user);
-try {
-  const newBlogData = {
-    author: author,
-    url: url,
-    user: user,
-    title: title,
-    likes: 2,
-  };
 
-  // 在此处获取用户的 JWT，你应该有一个方式来获取用户的身份验证令牌
-  const userToken = user.token;
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${userToken}`, // 包含 JWT 的请求头
-    },
-  };
+  const handleLike = async (id ) => {
+    console.log("no problem")
+    try {
+        const updatedBlog = blogs.find((blog) => blog.id === id);
+        if (updatedBlog) {
+          const updatedData = { ...updatedBlog, likes: updatedBlog.likes + 1 };
 
-  await axios.post("http://localhost:3003/api/blogs", newBlogData, config);
-} catch (exception) {
-  setErrorMessage("something went wrong when create please try again");
+          // 在此处获取用户的 JWT，你应该有一个方式来获取用户的身份验证令牌
+          const userToken = user.token;
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userToken}`, // 包含 JWT 的请求头
+            },
+          };
+
+          await axios.patch(
+            `http://localhost:3003/api/blogs/${id}`,
+            updatedData,
+            config
+          );
+
+          // 更新前端的数据状态，比如使用 setBlogs 更新单个博客
+          setBlogs((prevBlogs) =>
+            prevBlogs.map((blog) =>
+              blog.id === id ? { ...blog, likes: blog.likes + 1 } : blog
+            )
+          );
+        }
+     
+    } catch (exception) {
+  setErrorMessage("something went wrong when patch please try again");
 }
-
   }
 
   const handleLogout = () => {
@@ -108,9 +113,7 @@ try {
   const handleTitleChange = (e) => {
    setTitle(e.target.value)
   }
-  const handleHide = () => {
-    
-  }
+
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -162,7 +165,7 @@ try {
           <h2>Hi user: {user.username}</h2>
         </div>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+          <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog.id)} />
         ))}
   
         <Togglable buttonLabel="create">
@@ -181,7 +184,7 @@ try {
           logout: <button onClick={handleLogout}>logout</button>
         </div>
 
-        <div>{nBlog === "" ? null : nBlog}</div>
+        {/* <div>{nBlog === "" ? null : nBlog}</div> */}
       </div>
     );
   }

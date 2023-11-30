@@ -67,8 +67,9 @@ blogsRouter.delete("/:id", (request, response) => {
 
 
 blogsRouter.patch("/:id", async (request, response) => {
-  const id = request.params.id;
+  const id = String(request.params.id);
   const updateData = request.body;
+  // const validId = mongoose.Types.ObjectId(id);
 
   // 使用 Mongoose 的 findByIdAndUpdate 方法来更新指定 ID 的博客
   try {
@@ -79,6 +80,7 @@ blogsRouter.patch("/:id", async (request, response) => {
     );
     if (updatedBlog) {
       response.json(updatedBlog);
+      console.log(`successful update blog: ${id}`)
     } else {
       response.status(404).json({ error: "Blog not found" });
     }
