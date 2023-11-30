@@ -7,7 +7,7 @@ const Blog = ({ blog }) => {
   return (<div style={divStyle}>
     {blog.title} {blog.author}
     <div>{blog.url}</div>
-    <div>{blog.likes}</div>
+    <div>{blog.likes} <button onClick={blog.handleLike}>like</button></div>
   </div>)
 
 };
