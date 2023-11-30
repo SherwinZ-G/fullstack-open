@@ -14,4 +14,5 @@ const createNewBlog = async (credentials) => {
   return response.data;
 };
 
+
 export default { getAll,createNewBlog }

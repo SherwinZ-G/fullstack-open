@@ -55,6 +55,34 @@ const App = () => {
       }, 5000);
     }
   };
+  const handleLike = async (event ) => {
+event.preventDefault();
+console.log("已调用create blogs");
+console.log(user);
+try {
+  const newBlogData = {
+    author: author,
+    url: url,
+    user: user,
+    title: title,
+    likes: 2,
+  };
+
+  // 在此处获取用户的 JWT，你应该有一个方式来获取用户的身份验证令牌
+  const userToken = user.token;
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${userToken}`, // 包含 JWT 的请求头
+    },
+  };
+
+  await axios.post("http://localhost:3003/api/blogs", newBlogData, config);
+} catch (exception) {
+  setErrorMessage("something went wrong when create please try again");
+}
+
+  }
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedNoteappUser");
@@ -134,8 +162,7 @@ const App = () => {
           <h2>Hi user: {user.username}</h2>
         </div>
         {blogs.map((blog) => (
-          
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} handleLike={handleLike} />
         ))}
   
         <Togglable buttonLabel="create">
@@ -147,6 +174,7 @@ const App = () => {
             handleUrlChange={handleUrlChange}
             handleTitleChange={handleTitleChange}
             handleCreate={handleCreate}
+            
           />
         </Togglable> 
         <div>
