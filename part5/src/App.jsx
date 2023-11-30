@@ -17,6 +17,8 @@ const App = () => {
   const [url, setUrl] = useState("");
   const [author, setAuthor] = useState("");
   const [nBlog, setNblog] = useState("");
+  const [hide, setHide] = useState("")
+  
   // const[createVisible,setCreateVisible]=useState(false)
 
   useEffect(() => {
@@ -77,7 +79,10 @@ const App = () => {
 
   const handleTitleChange = (e) => {
    setTitle(e.target.value)
- }
+  }
+  const handleHide = () => {
+    
+  }
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -129,6 +134,7 @@ const App = () => {
           <h2>Hi user: {user.username}</h2>
         </div>
         {blogs.map((blog) => (
+          
           <Blog key={blog.id} blog={blog} />
         ))}
   
