@@ -32,6 +32,32 @@ const App = () => {
     }
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+        const removeBlog= blogs.find((blog) => blog.id === id);
+      if (removeBlog) {
+        // 在此处获取用户的 JWT，你应该有一个方式来获取用户的身份验证令牌
+        const userToken = user.token;
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`, // 包含 JWT 的请求头
+          },
+        };
+
+        await axios.delete(`http://localhost:3003/api/blogs/${id}`, config);
+        // 删除成功后更新前端博客列表
+        const updatedBlogs = blogs.filter((blog) => blog.id !== id);
+        setBlogs(updatedBlogs);
+      }
+      
+    } catch (exception) {
+  setErrorMessage("something went wrong when delete please try again");
+}
+  
+
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault();
     console.log("走到这里了");
@@ -58,8 +84,12 @@ const App = () => {
     console.log("no problem")
     try {
         const updatedBlog = blogs.find((blog) => blog.id === id);
-        if (updatedBlog) {
-          const updatedData = { ...updatedBlog, likes: updatedBlog.likes + 1 };
+      if (updatedBlog) {
+
+          const updatedData = {
+            ...updatedBlog,
+            likes: updatedBlog.likes === null? updatedBlog.likes+1 : 1,
+          };
 
           // 在此处获取用户的 JWT，你应该有一个方式来获取用户的身份验证令牌
           const userToken = user.token;
@@ -83,6 +113,7 @@ const App = () => {
             )
           );
         }
+      
      
     } catch (exception) {
   setErrorMessage("something went wrong when patch please try again");
@@ -142,6 +173,8 @@ const App = () => {
       setErrorMessage("something went wrong when create please try again");
     }
   };
+  const sortedBlogs = blogs.slice().sort((a, b) => b.likes - a.likes);
+
 
   if (user === null) {
     return (
@@ -164,8 +197,8 @@ const App = () => {
         <div>
           <h2>Hi user: {user.username}</h2>
         </div>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog.id)} />
+        {sortedBlogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog.id)} handleDelete={()=>handleDelete(blog.id)} />
         ))}
   
         <Togglable buttonLabel="create">
